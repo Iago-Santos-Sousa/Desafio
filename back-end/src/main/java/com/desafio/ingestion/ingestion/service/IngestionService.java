@@ -56,7 +56,7 @@ public class IngestionService {
       }
 
       headerValidator.validate(target);
-      
+
       IngestionJob job =
           jobs.save(
               new IngestionJob(

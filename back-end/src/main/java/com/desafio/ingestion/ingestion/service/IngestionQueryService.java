@@ -19,7 +19,7 @@ public class IngestionQueryService {
   @Transactional(readOnly = true)
   public IngestionJobPageResponse list(int requestedSize, String cursorValue) {
     int size = Math.min(Math.max(requestedSize, 1), 50);
-    
+
     List<IngestionJobListItem> rows =
         repository.findPage(size, IngestionCursorCodec.decode(cursorValue));
 
