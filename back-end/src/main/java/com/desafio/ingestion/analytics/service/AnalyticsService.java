@@ -36,7 +36,7 @@ public class AnalyticsService {
   @Transactional(readOnly = true)
   public List<AggregateDto> monthlyAggregates(LocalDate from, LocalDate to) {
     DateRange range = dateRangeResolver.resolve(from, to);
-    
+
     return repository.findMonthlyAggregates(range.from(), range.to()).stream()
         .map(
             row ->

@@ -64,7 +64,7 @@ public class IngestionJobListener implements JobExecutionListener {
 
     JobStatus finalStatus = s;
     String finalError = error;
-    
+
     jobs.findById(id)
         .ifPresent(
             j -> {

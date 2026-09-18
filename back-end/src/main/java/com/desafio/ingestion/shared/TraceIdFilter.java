@@ -27,7 +27,7 @@ public class TraceIdFilter extends OncePerRequestFilter {
 
     request.setAttribute(REQUEST_ATTRIBUTE, traceId);
     response.setHeader(HEADER, traceId);
-    
+
     try (MDC.MDCCloseable ignored = MDC.putCloseable("traceId", traceId)) {
       filterChain.doFilter(request, response);
     }

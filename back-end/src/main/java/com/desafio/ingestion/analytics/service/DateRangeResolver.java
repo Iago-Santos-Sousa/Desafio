@@ -21,7 +21,7 @@ public class DateRangeResolver {
     if (resolvedFrom.isAfter(resolvedTo)) {
       throw new InvalidDateRangeException("from must be before or equal to to");
     }
-    
+
     return new DateRange(resolvedFrom, resolvedTo);
   }
 }

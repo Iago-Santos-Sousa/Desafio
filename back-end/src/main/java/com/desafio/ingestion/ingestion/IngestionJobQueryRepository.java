@@ -26,8 +26,8 @@ public interface IngestionJobQueryRepository extends Repository<IngestionJob, UU
       @Param("createdAt") Instant createdAt, @Param("jobId") UUID jobId, Limit limit);
 
   default List<IngestionJobListItem> findPage(int limit, IngestionCursorCodec.Cursor cursor) {
-      Limit pageLimit = Limit.of(limit + 1);
-    
+    Limit pageLimit = Limit.of(limit + 1);
+
     return cursor == null
         ? findFirstPage(pageLimit)
         : findPageAfter(cursor.createdAt(), cursor.jobId(), pageLimit);

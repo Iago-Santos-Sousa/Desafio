@@ -22,7 +22,7 @@ public class JobMessageListener {
   @RabbitListener(queues = "ingestion.jobs")
   public void consume(JobMessage message) throws Exception {
     LOGGER.info("event=job_received jobId={}", message.jobId());
-    
+
     try {
       launcher.run(
           job,

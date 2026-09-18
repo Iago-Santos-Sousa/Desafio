@@ -76,7 +76,7 @@ public class IngestionService {
   @Transactional(readOnly = true)
   public java.util.List<IngestionJob> active(int requestedLimit) {
     int limit = Math.min(Math.max(requestedLimit, 1), 50);
-    
+
     return jobs.findByStatusInOrderByCreatedAtAsc(
         java.util.List.of(JobStatus.RECEIVED, JobStatus.QUEUED, JobStatus.PROCESSING),
         org.springframework.data.domain.PageRequest.of(0, limit));

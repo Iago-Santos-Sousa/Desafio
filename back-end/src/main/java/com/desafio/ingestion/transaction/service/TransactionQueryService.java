@@ -46,7 +46,7 @@ public class TransactionQueryService {
     }
 
     String nextCursor = hasMore && !rows.isEmpty() ? rows.get(rows.size() - 1) : null;
-    
+
     return new CategoryPageResponse(rows, nextCursor);
   }
 }

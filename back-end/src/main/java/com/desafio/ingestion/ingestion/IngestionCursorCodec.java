@@ -20,7 +20,7 @@ final class IngestionCursorCodec {
       if (parts.length != 2) {
         throw new InvalidCursorException("Invalid ingestion cursor", null);
       }
-      
+
       return new Cursor(Instant.parse(parts[0]), UUID.fromString(parts[1]));
 
     } catch (RuntimeException exception) {

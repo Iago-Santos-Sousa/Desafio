@@ -16,7 +16,7 @@ public class CsvHeaderValidator {
     try (var reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
       header = reader.readLine();
     }
-    
+
     if (header == null || !EXPECTED_HEADER.equals(stripBom(header).trim())) {
       throw new CsvFormatException(
           "CSV_HEADER_INVALID", "CSV deve usar cabeçalho: " + EXPECTED_HEADER);

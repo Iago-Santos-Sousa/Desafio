@@ -54,7 +54,7 @@ public class BatchConfig {
 
     reader.setLinesToSkip(1);
     reader.setStrict(true);
-    
+
     return reader;
   }
 

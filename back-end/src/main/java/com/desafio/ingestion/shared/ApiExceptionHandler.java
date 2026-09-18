@@ -104,7 +104,7 @@ public class ApiExceptionHandler {
         detail);
 
     ApiProblem body = new ApiProblem(status, code, title, detail, Instant.now(), traceId(request));
-    
+
     return ResponseEntity.status(status).contentType(MediaType.APPLICATION_PROBLEM_JSON).body(body);
   }
 

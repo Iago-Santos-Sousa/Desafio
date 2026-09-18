@@ -35,7 +35,7 @@ public class DailyJobCategoryAggregateId implements Serializable {
     if (!(other instanceof DailyJobCategoryAggregateId that)) {
       return false;
     }
-    
+
     return Objects.equals(ingestionJobId, that.ingestionJobId)
         && Objects.equals(day, that.day)
         && Objects.equals(category, that.category);

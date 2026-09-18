@@ -34,7 +34,7 @@ public class IngestionController {
   @Operation(summary = "Upload CSV for asynchronous ingestion")
   public Map<String, Object> upload(@RequestPart("file") MultipartFile file) throws IOException {
     IngestionJob j = service.accept(file);
-    
+
     return Map.of(
         "jobId",
         j.getId(),

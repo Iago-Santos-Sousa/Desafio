@@ -30,7 +30,7 @@ public class IngestionProgressChunkListener
     if (stepExecution == null) {
       return;
     }
-    
+
     UUID jobId = UUID.fromString(stepExecution.getJobParameters().getString("jobId"));
     progress.update(
         jobId,

@@ -72,7 +72,7 @@ public class TransactionRepositoryImpl implements TransactionRepositoryCustom {
       String prefix = search.trim().toLowerCase(Locale.ROOT) + "%";
       predicates.add(builder.like(builder.lower(transaction.get("category")), prefix));
     }
-    
+
     if (cursor != null && !cursor.isBlank()) {
       predicates.add(builder.greaterThan(transaction.<String>get("category"), cursor));
     }

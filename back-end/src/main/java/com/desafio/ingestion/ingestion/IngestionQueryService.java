@@ -17,7 +17,7 @@ public class IngestionQueryService {
     int size = Math.min(Math.max(requestedSize, 1), 50);
     List<IngestionJobListItem> rows =
         repository.findPage(size, IngestionCursorCodec.decode(cursorValue));
-        
+
     boolean hasMore = rows.size() > size;
 
     if (hasMore) {
