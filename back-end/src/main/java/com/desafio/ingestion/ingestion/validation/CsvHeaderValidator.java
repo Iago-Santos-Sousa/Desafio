@@ -1,4 +1,4 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.validation;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

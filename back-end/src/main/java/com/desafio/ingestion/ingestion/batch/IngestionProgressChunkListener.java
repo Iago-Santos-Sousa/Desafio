@@ -1,5 +1,6 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.batch;
 
+import com.desafio.ingestion.ingestion.service.IngestionProgressService;
 import java.util.UUID;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.core.listener.ChunkListener;

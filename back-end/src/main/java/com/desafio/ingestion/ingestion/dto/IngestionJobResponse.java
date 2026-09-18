@@ -1,5 +1,7 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.dto;
 
+import com.desafio.ingestion.ingestion.entity.IngestionJob;
+import com.desafio.ingestion.ingestion.entity.JobStatus;
 import java.time.Instant;
 import java.util.UUID;
 

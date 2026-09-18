@@ -1,6 +1,6 @@
 package com.desafio.ingestion.transaction.repository;
 
-import com.desafio.ingestion.ingestion.IngestionJob;
+import com.desafio.ingestion.ingestion.entity.IngestionJob;
 import com.desafio.ingestion.transaction.dto.TransactionDto;
 import com.desafio.ingestion.transaction.entity.TransactionRecord;
 import jakarta.persistence.EntityManager;

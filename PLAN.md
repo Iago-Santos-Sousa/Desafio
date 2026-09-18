@@ -79,6 +79,24 @@ Implementado nesta etapa:
 - Todos os 40 arquivos Java existentes devem ser formatados no baseline inicial; lint não altera contratos REST, schema ou comportamento.
 - Docker executa `mvn -DskipTests verify`, aplicando Spotless e Checkstyle antes da imagem final.
 
+## Implementacao concluida — organizacao do modulo ingestion
+
+- O modulo `back-end/src/main/java/com/desafio/ingestion/ingestion` foi reorganizado por responsabilidade:
+  - `controller`: endpoints REST e mapeamento de entrada/saida HTTP.
+  - `dto`: records publicos (`IngestionAcceptedResponse`, listagem e detalhe); entidades JPA nao atravessam a API.
+  - `entity`: `IngestionJob` e `JobStatus`.
+  - `repository`: repositorios Spring Data JPA e consulta keyset.
+  - `service`: casos de uso de aceite, consulta e progresso.
+  - `batch`: configuracao Spring Batch, listeners e `TransactionRow`.
+  - `messaging`: contrato `JobMessage` e listener RabbitMQ.
+  - `validation`: validacao de cabecalho e excecao de formato CSV.
+  - `cursor`: codec e excecao de cursor opaco.
+- `IngestionController` agora retorna `IngestionAcceptedResponse` tipado no `POST /api/v1/ingestions`; JSON permanece compativel (`jobId`, `status`, `statusUrl`).
+- JPQL, handlers de excecao, conversor RabbitMQ e entidades de transacao foram atualizados para os novos pacotes.
+- `JdbcBatchItemWriter` e fluxo Spring Batch permanecem preservados para o caminho de alto volume; nenhuma migration ou rota foi alterada.
+- Front-end nao exigiu mudanca de codigo: contratos REST permanecem compativeis e estrutura existente continua valida.
+- Validacao executada: `docker compose build back-end` passou com Maven `verify`, Spotless e Checkstyle.
+
 ## Plano implementado — configuração IntelliJ para Checkstyle
 
 - `README_BACK_END.md` documenta configuração do projeto com Java 21, instalação dos plugins `CheckStyle-IDEA` e `google-java-format` e reload Maven.

@@ -1,4 +1,4 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.dto;
 
 import java.util.List;
 

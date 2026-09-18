@@ -1,6 +1,8 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.batch;
 
 import com.desafio.ingestion.analytics.service.AnalyticsService;
+import com.desafio.ingestion.ingestion.entity.JobStatus;
+import com.desafio.ingestion.ingestion.repository.IngestionJobRepository;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

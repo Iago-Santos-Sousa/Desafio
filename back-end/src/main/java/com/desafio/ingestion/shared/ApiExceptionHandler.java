@@ -1,8 +1,8 @@
 package com.desafio.ingestion.shared;
 
 import com.desafio.ingestion.analytics.service.InvalidDateRangeException;
-import com.desafio.ingestion.ingestion.CsvFormatException;
-import com.desafio.ingestion.ingestion.InvalidCursorException;
+import com.desafio.ingestion.ingestion.cursor.InvalidCursorException;
+import com.desafio.ingestion.ingestion.validation.CsvFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.NoSuchElementException;

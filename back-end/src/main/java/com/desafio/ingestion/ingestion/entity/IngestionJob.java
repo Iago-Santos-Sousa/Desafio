@@ -1,4 +1,4 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

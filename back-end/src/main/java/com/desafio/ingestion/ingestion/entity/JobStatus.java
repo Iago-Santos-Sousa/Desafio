@@ -1,4 +1,4 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.entity;
 
 public enum JobStatus {
   RECEIVED,

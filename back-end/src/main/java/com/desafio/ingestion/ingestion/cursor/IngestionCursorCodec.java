@@ -1,14 +1,15 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.cursor;
 
+import com.desafio.ingestion.ingestion.dto.IngestionJobListItem;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
 
-final class IngestionCursorCodec {
+public final class IngestionCursorCodec {
   private IngestionCursorCodec() {}
 
-  static Cursor decode(String value) {
+  public static Cursor decode(String value) {
     if (value == null || value.isBlank()) {
       return null;
     }
@@ -32,12 +33,12 @@ final class IngestionCursorCodec {
     }
   }
 
-  static String encode(IngestionJobListItem item) {
+  public static String encode(IngestionJobListItem item) {
     String value = item.createdAt() + "|" + item.jobId();
     return Base64.getUrlEncoder()
         .withoutPadding()
         .encodeToString(value.getBytes(StandardCharsets.UTF_8));
   }
 
-  record Cursor(Instant createdAt, UUID jobId) {}
+  public record Cursor(Instant createdAt, UUID jobId) {}
 }

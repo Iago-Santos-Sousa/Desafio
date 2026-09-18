@@ -1,5 +1,7 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.repository;
 
+import com.desafio.ingestion.ingestion.entity.IngestionJob;
+import com.desafio.ingestion.ingestion.entity.JobStatus;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;

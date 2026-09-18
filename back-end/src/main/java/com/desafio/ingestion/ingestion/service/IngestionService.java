@@ -1,5 +1,10 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.service;
 
+import com.desafio.ingestion.ingestion.entity.IngestionJob;
+import com.desafio.ingestion.ingestion.entity.JobStatus;
+import com.desafio.ingestion.ingestion.messaging.JobMessage;
+import com.desafio.ingestion.ingestion.repository.IngestionJobRepository;
+import com.desafio.ingestion.ingestion.validation.CsvHeaderValidator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +56,7 @@ public class IngestionService {
       }
 
       headerValidator.validate(target);
+      
       IngestionJob job =
           jobs.save(
               new IngestionJob(

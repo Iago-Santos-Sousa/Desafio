@@ -1,4 +1,4 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.batch;
 
 import java.math.BigDecimal;
 import java.time.Instant;

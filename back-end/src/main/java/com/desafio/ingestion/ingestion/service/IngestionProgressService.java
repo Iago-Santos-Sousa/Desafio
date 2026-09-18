@@ -1,5 +1,7 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.service;
 
+import com.desafio.ingestion.ingestion.entity.JobStatus;
+import com.desafio.ingestion.ingestion.repository.IngestionJobRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

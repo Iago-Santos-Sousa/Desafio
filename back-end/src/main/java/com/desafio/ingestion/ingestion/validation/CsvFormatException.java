@@ -1,4 +1,4 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.validation;
 
 public class CsvFormatException extends IllegalArgumentException {
   private final String code;

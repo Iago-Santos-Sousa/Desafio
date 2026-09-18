@@ -1,6 +1,6 @@
 package com.desafio.ingestion.transaction.entity;
 
-import com.desafio.ingestion.ingestion.IngestionJob;
+import com.desafio.ingestion.ingestion.entity.IngestionJob;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

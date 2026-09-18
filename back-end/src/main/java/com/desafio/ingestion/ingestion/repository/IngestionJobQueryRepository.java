@@ -1,5 +1,8 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.repository;
 
+import com.desafio.ingestion.ingestion.cursor.IngestionCursorCodec;
+import com.desafio.ingestion.ingestion.dto.IngestionJobListItem;
+import com.desafio.ingestion.ingestion.entity.IngestionJob;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -10,13 +13,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface IngestionJobQueryRepository extends Repository<IngestionJob, UUID> {
   @Query(
-      "select new com.desafio.ingestion.ingestion.IngestionJobListItem("
+      "select new com.desafio.ingestion.ingestion.dto.IngestionJobListItem("
           + "j.id, j.originalFilename, j.fileSizeBytes, j.status, j.createdAt, j.updatedAt)"
           + " from IngestionJob j order by j.createdAt desc, j.id desc")
   List<IngestionJobListItem> findFirstPage(Limit limit);
 
   @Query(
-      "select new com.desafio.ingestion.ingestion.IngestionJobListItem("
+      "select new com.desafio.ingestion.ingestion.dto.IngestionJobListItem("
           + "j.id, j.originalFilename, j.fileSizeBytes, j.status, j.createdAt, j.updatedAt)"
           + " from IngestionJob j"
           + " where j.createdAt < :createdAt"

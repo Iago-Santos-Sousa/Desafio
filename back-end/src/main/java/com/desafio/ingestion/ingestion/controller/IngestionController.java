@@ -1,9 +1,14 @@
-package com.desafio.ingestion.ingestion;
+package com.desafio.ingestion.ingestion.controller;
 
+import com.desafio.ingestion.ingestion.dto.IngestionAcceptedResponse;
+import com.desafio.ingestion.ingestion.dto.IngestionJobPageResponse;
+import com.desafio.ingestion.ingestion.dto.IngestionJobResponse;
+import com.desafio.ingestion.ingestion.entity.IngestionJob;
+import com.desafio.ingestion.ingestion.service.IngestionQueryService;
+import com.desafio.ingestion.ingestion.service.IngestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,16 +37,11 @@ public class IngestionController {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.ACCEPTED)
   @Operation(summary = "Upload CSV for asynchronous ingestion")
-  public Map<String, Object> upload(@RequestPart("file") MultipartFile file) throws IOException {
+  public IngestionAcceptedResponse upload(@RequestPart("file") MultipartFile file)
+      throws IOException {
     IngestionJob j = service.accept(file);
 
-    return Map.of(
-        "jobId",
-        j.getId(),
-        "status",
-        j.getStatus(),
-        "statusUrl",
-        "/api/v1/ingestions/" + j.getId());
+    return IngestionAcceptedResponse.from(j);
   }
 
   @GetMapping

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class MessagingConfig {
   @Bean
   JacksonJsonMessageConverter rabbitMessageConverter() {
-    return new JacksonJsonMessageConverter("com.desafio.ingestion.ingestion");
+    return new JacksonJsonMessageConverter("com.desafio.ingestion.ingestion.messaging");
   }
 
   @Bean
