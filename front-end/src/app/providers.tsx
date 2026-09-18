@@ -6,6 +6,7 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import type { PropsWithChildren } from "react";
 import { theme } from "./theme";
 import { ToastProvider } from "../context/ToastContext";
+import { DashboardDateFiltersProvider } from "../context/DashboardDateFiltersContext";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5000, retry: 1 } },
@@ -17,7 +18,9 @@ export function AppProviders({ children }: PropsWithChildren) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
-          <ToastProvider>{children}</ToastProvider>
+          <DashboardDateFiltersProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </DashboardDateFiltersProvider>
         </LocalizationProvider>
       </ThemeProvider>
     </QueryClientProvider>

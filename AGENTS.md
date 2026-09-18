@@ -102,6 +102,8 @@ Se requisito, plano e código divergirem, preserve comportamento existente quand
 - Usar componentes funcionais, hooks e `async/await`.
 - TanStack Query controla estado remoto: upload, status, métricas e páginas. Context API guarda apenas estado global de UI que não pertença ao servidor.
 - React Hook Form controla formulários de consulta e validação de campos; componentes MUI controlados usam `Controller`.
+- Campos de data do MUI devem usar `slotProps.field.readOnly`; bloquear teclado/colagem sem desabilitar botão ou seleção do calendário.
+- Filtros de data compartilhados entre rotas usam Context API com `sessionStorage` versionado; validar e descartar payloads inválidos.
 - Axios fica em cliente HTTP central, com base URL, timeout e tratamento de erro coerente.
 - Consultas paginadas incluem cursor e filtros no `queryKey`; usar `placeholderData` para transição estável.
 - Estado de cursor, histórico, próxima/anterior e reset deve ficar em hooks personalizados reutilizáveis; componentes não duplicam essa lógica.

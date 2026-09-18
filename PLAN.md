@@ -64,6 +64,16 @@ Implementação aprovada após revisão do estado real:
 - `useCursorPagination` concentra cursor, historico, navegacao e reset para jobs e transacoes; paginacao server-side e keyset permanecem inalteradas.
 - Testes unitarios cobrem ano suportado, bissexto valido, ano antigo, futuro e intervalo invertido.
 
+## Implementacao - bloqueio manual e persistencia dos filtros
+
+- `DateRangeFields` usa `slotProps.field.readOnly`, bloqueando digitacao e colagem sem desabilitar botão, abertura ou selecao do calendario MUI.
+- `DashboardDateFiltersProvider` e `useDashboardDateFilters` mantem `from`/`to` em Context API e persistem somente strings `yyyy-MM-dd` na chave versionada `datapulse.dashboard.date-range.v1` do `sessionStorage`.
+- Payload ausente, corrompido, incompleto, antigo, futuro ou fora do intervalo suportado e descartado; o periodo padrao segue primeiro dia do mes ate hoje em `America/Sao_Paulo`.
+- Precedencia definida: par valido na URL vence session storage; sem URL valida, usar sessao; sem sessao valida, usar padrao. Dashboard sincroniza Context, URL e storage sem criar historico extra na hidratacao.
+- Provider envolve `RouterProvider`, portanto valores sobrevivem a navegacao entre `/dashboard`, `/ingestions`, `/ingestions/new` e `/ingestions/:jobId`; estado remoto continua no TanStack Query.
+- `isValidDateRange` passa a aplicar tambem limites de ano/data para validar URL e storage antes das consultas.
+- Validar com build, lint e fluxo manual de digitacao/colagem, selecao pelo calendario, navegacao, reload da aba, URL valida e storage corrompido.
+
 Construir sistema containerizado capaz de receber CSV com mais de 1 milhão de registros, processar sem crescimento proporcional de RAM, consultar progresso, listar dados eficientemente e exibir dashboard React responsivo.
 
 Estado inicial em 2026-09-16:

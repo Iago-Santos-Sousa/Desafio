@@ -48,6 +48,9 @@ export function DateRangeFields({
           onChange={(value) => field.onChange(value)}
           onError={() => field.onChange(null)}
           slotProps={{
+            field: {
+              readOnly: true,
+            },
             textField: {
               size: "small",
               onBlur: field.onBlur,

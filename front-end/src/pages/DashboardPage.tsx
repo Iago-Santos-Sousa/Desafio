@@ -1,24 +1,58 @@
 import { Stack } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { PageHeader } from "../components/PageHeader";
+import { useDashboardDateFilters } from "../context/useDashboardDateFilters";
 import { AnalyticsPanel } from "../features/dashboard/AnalyticsPanel";
 import { ActiveIngestionsPanel } from "../features/ingestions/ActiveIngestionsPanel";
 import { useActiveIngestionsQuery } from "../hooks/api/useIngestionQueries";
-import {
-  defaultDashboardDateRange,
-  isValidDateRange,
-} from "../utils/dateRange";
+import { isValidDateRange } from "../utils/dateRange";
 
 export function DashboardPage() {
   const [params, setParams] = useSearchParams();
-  const defaults = useState(defaultDashboardDateRange)[0];
-  const from = params.get("from") ?? defaults.from;
-  const to = params.get("to") ?? defaults.to;
+  const { filters, setFilters } = useDashboardDateFilters();
+  const urlFrom = params.get("from");
+  const urlTo = params.get("to");
+
+  const urlFilters = useMemo(() => {
+    if (urlFrom && urlTo && isValidDateRange(urlFrom, urlTo)) {
+      return { from: urlFrom, to: urlTo };
+    }
+
+    return null;
+  }, [urlFrom, urlTo]);
+
+  const effectiveFilters = urlFilters ?? filters;
   const activeIngestions = useActiveIngestionsQuery();
+
+  useEffect(() => {
+    if (
+      filters.from !== effectiveFilters.from ||
+      filters.to !== effectiveFilters.to
+    ) {
+      setFilters(effectiveFilters);
+    }
+
+    if (urlFrom !== effectiveFilters.from || urlTo !== effectiveFilters.to) {
+      const nextParams = new URLSearchParams(params);
+      nextParams.set("from", effectiveFilters.from);
+      nextParams.set("to", effectiveFilters.to);
+      setParams(nextParams, { replace: true });
+    }
+  }, [
+    effectiveFilters,
+    filters.from,
+    filters.to,
+    params,
+    setFilters,
+    setParams,
+    urlFrom,
+    urlTo,
+  ]);
 
   const updateRange = (nextFrom: string, nextTo: string) => {
     if (!isValidDateRange(nextFrom, nextTo)) return;
+    setFilters({ from: nextFrom, to: nextTo });
     setParams({ from: nextFrom, to: nextTo });
   };
 
@@ -33,9 +67,9 @@ export function DashboardPage() {
         loading={activeIngestions.isPending}
       />
       <AnalyticsPanel
-        key={`${from}-${to}`}
-        from={from}
-        to={to}
+        key={`${effectiveFilters.from}-${effectiveFilters.to}`}
+        from={effectiveFilters.from}
+        to={effectiveFilters.to}
         onRangeChange={updateRange}
       />
     </Stack>

@@ -1,5 +1,6 @@
 import {
   format,
+  isBefore,
   isAfter,
   isValid,
   parse,
@@ -72,7 +73,9 @@ export const isValidDateRange = (from: string, to: string): boolean => {
   const parsedTo = parse(to, API_DATE_FORMAT, new Date());
 
   return (
-    isValid(parsedFrom) && isValid(parsedTo) && !isAfter(parsedFrom, parsedTo)
+    isSupportedDashboardDate(from) &&
+    isSupportedDashboardDate(to) &&
+    !isAfter(parsedFrom, parsedTo)
   );
 };
 
@@ -85,4 +88,17 @@ export const parseDashboardDate = (value: string): Date | null => {
 
 export const formatDashboardDate = (value: Date | null): string => {
   return value && isValid(value) ? format(value, API_DATE_FORMAT) : "";
+};
+
+export const isSupportedDashboardDate = (value: string): boolean => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+
+  const parsed = parse(value, API_DATE_FORMAT, new Date());
+  if (!isValid(parsed) || format(parsed, API_DATE_FORMAT) !== value) {
+    return false;
+  }
+
+  const minimum = minDashboardDate();
+  const today = businessTodayDate();
+  return !isBefore(parsed, minimum) && !isAfter(parsed, today);
 };
