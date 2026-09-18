@@ -1,54 +1,57 @@
 package com.desafio.ingestion.analytics.repository;
 
-import com.desafio.ingestion.analytics.dto.AggregateDto;
 import com.desafio.ingestion.analytics.dto.SummaryDto;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-
+import com.desafio.ingestion.analytics.entity.DailyJobCategoryAggregate;
+import com.desafio.ingestion.analytics.entity.DailyJobCategoryAggregateId;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 
-@Repository
-public class AnalyticsRepository {
-  private final JdbcTemplate jdbc;
-  private final String businessTimeZone;
+public interface AnalyticsRepository
+    extends Repository<DailyJobCategoryAggregate, DailyJobCategoryAggregateId> {
+  @Query(
+      "select new com.desafio.ingestion.analytics.dto.SummaryDto("
+          + "coalesce(sum(a.transactionCount), 0), "
+          + "coalesce(sum(a.totalAmount), 0), "
+          + "count(distinct a.id.category)) "
+          + "from DailyJobCategoryAggregate a "
+          + "where a.id.day between :from and :to")
+  SummaryDto findSummary(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
-  public AnalyticsRepository(
-    JdbcTemplate jdbc,
-    @Value("${app.business-time-zone:America/Sao_Paulo}") String businessTimeZone) {
-    this.jdbc = jdbc;
-    this.businessTimeZone = businessTimeZone;
-  }
+  @Query(
+      value =
+          "select date_trunc('month', day)::date as \"month\", category as \"category\", "
+              + "sum(total_amount) as \"totalAmount\", "
+              + "sum(transaction_count) as \"transactionCount\" "
+              + "from daily_job_category_aggregate "
+              + "where day between :from and :to "
+              + "group by 1, category order by 1, category",
+      nativeQuery = true)
+  List<MonthlyAggregateProjection> findMonthlyAggregates(
+      @Param("from") LocalDate from, @Param("to") LocalDate to);
 
-  public SummaryDto findSummary(LocalDate from, LocalDate to) {
-    return jdbc.queryForObject(
-      "SELECT coalesce(sum(transaction_count), 0), coalesce(sum(total_amount), 0), count(distinct"
-        + " category) FROM daily_job_category_aggregate WHERE day BETWEEN ? AND ?",
-      new Object[]{from, to},
-      (rs, rowNum) -> new SummaryDto(rs.getLong(1), rs.getBigDecimal(2), rs.getLong(3)));
-  }
+  @Modifying
+  @Query("delete from DailyJobCategoryAggregate a where a.id.ingestionJobId = :jobId")
+  int deleteByJobId(@Param("jobId") UUID jobId);
 
-  public List<AggregateDto> findMonthlyAggregates(LocalDate from, LocalDate to) {
-    return jdbc.query(
-      "SELECT date_trunc('month', day)::date, category, sum(total_amount), sum(transaction_count)"
-        + " FROM daily_job_category_aggregate WHERE day BETWEEN ? AND ? GROUP BY 1, category"
-        + " ORDER BY 1, category",
-      new Object[]{from, to},
-      (rs, rowNum) ->
-        new AggregateDto(
-          rs.getDate(1).toLocalDate(), rs.getString(2), rs.getBigDecimal(3), rs.getLong(4)));
-  }
+  @Modifying
+  @Query(
+      value =
+          "insert into daily_job_category_aggregate "
+              + "(ingestion_job_id, day, category, total_amount, transaction_count) "
+              + "select ingestion_job_id, (occurred_at at time zone :businessTimeZone)::date, "
+              + "category, sum(amount), count(*) "
+              + "from transaction_record where ingestion_job_id = :jobId "
+              + "group by 1, 2, 3",
+      nativeQuery = true)
+  int insertByJobId(@Param("jobId") UUID jobId, @Param("businessTimeZone") String businessTimeZone);
 
-  public void refreshAggregates(UUID jobId) {
-    jdbc.update("DELETE FROM daily_job_category_aggregate WHERE ingestion_job_id = ?", jobId);
-    jdbc.update(
-      "INSERT INTO daily_job_category_aggregate(ingestion_job_id, day, category, total_amount,"
-        + " transaction_count) SELECT ingestion_job_id, (occurred_at AT TIME ZONE ?)::date,"
-        + " category, sum(amount), count(*) FROM transaction_record WHERE ingestion_job_id = ?"
-        + " GROUP BY ingestion_job_id, 2, category",
-      businessTimeZone,
-      jobId);
+  default void refreshAggregates(UUID jobId, String businessTimeZone) {
+    deleteByJobId(jobId);
+    insertByJobId(jobId, businessTimeZone);
   }
 }

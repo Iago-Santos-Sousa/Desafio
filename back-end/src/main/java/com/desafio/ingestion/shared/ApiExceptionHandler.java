@@ -70,12 +70,14 @@ public class ApiExceptionHandler {
   @ExceptionHandler(Exception.class)
   ResponseEntity<ApiProblem> internal(Exception exception, HttpServletRequest request) {
     String trace = traceId(request);
+
     LOGGER.error(
         "event=unhandled_exception method={} path={} traceId={}",
         request.getMethod(),
         request.getRequestURI(),
         trace,
         exception);
+
     ApiProblem body =
         new ApiProblem(
             500,
@@ -84,12 +86,14 @@ public class ApiExceptionHandler {
             "Unexpected server error.",
             Instant.now(),
             trace);
+
     return ResponseEntity.status(500).contentType(MediaType.APPLICATION_PROBLEM_JSON).body(body);
   }
 
   private ResponseEntity<ApiProblem> problem(
       int status, String code, String title, Exception exception, HttpServletRequest request) {
     String detail = exception.getMessage() == null ? title : exception.getMessage();
+
     LOGGER.warn(
         "event=api_error status={} code={} method={} path={} traceId={} detail={}",
         status,
@@ -98,7 +102,9 @@ public class ApiExceptionHandler {
         request.getRequestURI(),
         traceId(request),
         detail);
+
     ApiProblem body = new ApiProblem(status, code, title, detail, Instant.now(), traceId(request));
+    
     return ResponseEntity.status(status).contentType(MediaType.APPLICATION_PROBLEM_JSON).body(body);
   }
 

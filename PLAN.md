@@ -88,6 +88,16 @@ Implementado nesta etapa:
 - IntelliJ fornece feedback e formatação local; Maven e Docker permanecem gates oficiais. Nenhuma configuração `.idea` específica de máquina é obrigatória ou versionada.
 - Validação documentada: `mvn spotless:check`, `mvn checkstyle:check` e `mvn -DskipTests verify`; sem Maven local, executar os comandos pelo container Java 21.
 
+## Plano implementado — migração JdbcTemplate para Spring Data JPA
+
+- `JdbcTemplate` foi removido dos repositories de consulta de jobs, transações e analytics; o código da aplicação não possui mais uso direto dessa API.
+- Jobs usam repository Spring Data com JPQL, constructor projection e cursor keyset por `(createdAt, id)`.
+- Transações usam entidade JPA, `JpaRepository` e fragmento customizado com Criteria API para filtros opcionais, projeções DTO e paginação por cursor sem `OFFSET`.
+- Agregados diários usam entidade JPA e chave composta; resumo usa JPQL, série mensal usa projection nativa pontual e refresh usa `delete` + `INSERT ... SELECT` transacional com timezone configurável.
+- `JdbcBatchItemWriter` permanece no Spring Batch para o caminho crítico de milhões de inserts, preservando chunks, memória limitada e throughput.
+- Schema, migrations, contratos REST e respostas públicas permanecem compatíveis; entidades JPA não atravessam a camada HTTP.
+- Validação executada: Spotless, Checkstyle, compilação Java 21, build Docker, inicialização com Hibernate `ddl-auto=validate`, endpoints de jobs/transações/categorias/analytics e upload CSV de smoke.
+
 ## 2. Decisões arquiteturais
 
 ### 2.1 Pipeline escolhido

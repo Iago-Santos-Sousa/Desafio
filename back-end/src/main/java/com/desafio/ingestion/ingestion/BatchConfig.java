@@ -31,9 +31,13 @@ public class BatchConfig {
       @Value("#{jobParameters['filePath']}") String filePath,
       @Value("#{jobParameters['jobId']}") String jobId) {
     var tokenizer = new DelimitedLineTokenizer();
+
     tokenizer.setNames("occurred_at", "category", "amount", "description");
+
     var mapper = new DefaultLineMapper<TransactionRow>();
+
     mapper.setLineTokenizer(tokenizer);
+
     mapper.setFieldSetMapper(
         (FieldSet fields) ->
             new TransactionRow(
@@ -43,11 +47,14 @@ public class BatchConfig {
                 new BigDecimal(fields.readString("amount")),
                 fields.readString("description")));
     mapper.afterPropertiesSet();
+
     var reader =
         new FlatFileItemReader<TransactionRow>(
             new org.springframework.core.io.FileSystemResource(Path.of(filePath)), mapper);
+
     reader.setLinesToSkip(1);
     reader.setStrict(true);
+    
     return reader;
   }
 

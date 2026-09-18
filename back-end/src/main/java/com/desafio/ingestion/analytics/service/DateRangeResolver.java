@@ -17,9 +17,11 @@ public class DateRangeResolver {
     LocalDate today = LocalDate.now(zone);
     LocalDate resolvedFrom = from == null ? today.withDayOfMonth(1) : from;
     LocalDate resolvedTo = to == null ? today : to;
+
     if (resolvedFrom.isAfter(resolvedTo)) {
       throw new InvalidDateRangeException("from must be before or equal to to");
     }
+    
     return new DateRange(resolvedFrom, resolvedTo);
   }
 }

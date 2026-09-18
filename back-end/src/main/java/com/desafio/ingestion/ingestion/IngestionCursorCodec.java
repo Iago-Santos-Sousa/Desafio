@@ -12,17 +12,22 @@ final class IngestionCursorCodec {
     if (value == null || value.isBlank()) {
       return null;
     }
+
     try {
       String decoded = new String(Base64.getUrlDecoder().decode(value), StandardCharsets.UTF_8);
       String[] parts = decoded.split("\\|", -1);
+
       if (parts.length != 2) {
         throw new InvalidCursorException("Invalid ingestion cursor", null);
       }
+      
       return new Cursor(Instant.parse(parts[0]), UUID.fromString(parts[1]));
+
     } catch (RuntimeException exception) {
       if (exception instanceof InvalidCursorException invalid) {
         throw invalid;
       }
+
       throw new InvalidCursorException("Invalid ingestion cursor", exception);
     }
   }

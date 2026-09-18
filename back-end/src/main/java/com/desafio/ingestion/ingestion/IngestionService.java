@@ -39,22 +39,28 @@ public class IngestionService {
         || !file.getOriginalFilename().toLowerCase().endsWith(".csv")) {
       throw new IllegalArgumentException("CSV file is required");
     }
+
     Files.createDirectories(uploadDir);
     UUID id = UUID.randomUUID();
     Path target = uploadDir.resolve(id + ".csv");
+
     try {
       try (InputStream in = file.getInputStream();
           OutputStream out = Files.newOutputStream(target, StandardOpenOption.CREATE_NEW)) {
         in.transferTo(out);
       }
+
       headerValidator.validate(target);
       IngestionJob job =
           jobs.save(
               new IngestionJob(
                   id, file.getOriginalFilename(), target.toString(), Files.size(target)));
+
       job.queued();
       jobs.save(job);
+
       rabbit.convertAndSend("ingestion.exchange", "ingestion.jobs", new JobMessage(id));
+
       return job;
     } catch (IOException | RuntimeException ex) {
       try {
@@ -62,6 +68,7 @@ public class IngestionService {
       } catch (IOException cleanup) {
         ex.addSuppressed(cleanup);
       }
+
       throw ex;
     }
   }
@@ -69,6 +76,7 @@ public class IngestionService {
   @Transactional(readOnly = true)
   public java.util.List<IngestionJob> active(int requestedLimit) {
     int limit = Math.min(Math.max(requestedLimit, 1), 50);
+    
     return jobs.findByStatusInOrderByCreatedAtAsc(
         java.util.List.of(JobStatus.RECEIVED, JobStatus.QUEUED, JobStatus.PROCESSING),
         org.springframework.data.domain.PageRequest.of(0, limit));

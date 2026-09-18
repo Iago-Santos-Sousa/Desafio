@@ -40,11 +40,14 @@ public class IngestionJobListener implements JobExecutionListener {
     long valid = e.getStepExecutions().stream().mapToLong(StepExecution::getWriteCount).sum();
     long invalid = e.getStepExecutions().stream().mapToLong(StepExecution::getSkipCount).sum();
     long processed = valid + invalid;
+
     JobStatus s =
         e.getStatus() == BatchStatus.COMPLETED
             ? (invalid > 0 ? JobStatus.COMPLETED_WITH_ERRORS : JobStatus.COMPLETED)
             : JobStatus.FAILED;
+
     String error = s == JobStatus.FAILED ? "Batch processing failed" : null;
+
     if (s == JobStatus.COMPLETED || s == JobStatus.COMPLETED_WITH_ERRORS) {
       try {
         analytics.refreshAggregates(id);
@@ -54,11 +57,14 @@ public class IngestionJobListener implements JobExecutionListener {
         error = "Aggregate refresh failed";
       }
     }
+
     if (s == JobStatus.FAILED) {
       e.getAllFailureExceptions().forEach(ex -> LOGGER.error("Batch failed for jobId={}", id, ex));
     }
+
     JobStatus finalStatus = s;
     String finalError = error;
+    
     jobs.findById(id)
         .ifPresent(
             j -> {

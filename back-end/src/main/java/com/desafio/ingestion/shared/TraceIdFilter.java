@@ -20,11 +20,14 @@ public class TraceIdFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String traceId = request.getHeader(HEADER);
+
     if (traceId == null || traceId.isBlank() || traceId.length() > 128) {
       traceId = UUID.randomUUID().toString();
     }
+
     request.setAttribute(REQUEST_ATTRIBUTE, traceId);
     response.setHeader(HEADER, traceId);
+    
     try (MDC.MDCCloseable ignored = MDC.putCloseable("traceId", traceId)) {
       filterChain.doFilter(request, response);
     }

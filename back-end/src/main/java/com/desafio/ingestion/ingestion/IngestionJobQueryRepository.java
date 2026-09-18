@@ -1,46 +1,35 @@
 package com.desafio.ingestion.ingestion;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import java.util.UUID;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 
-@Repository
-public class IngestionJobQueryRepository {
-  private final JdbcTemplate jdbc;
+public interface IngestionJobQueryRepository extends Repository<IngestionJob, UUID> {
+  @Query(
+      "select new com.desafio.ingestion.ingestion.IngestionJobListItem("
+          + "j.id, j.originalFilename, j.fileSizeBytes, j.status, j.createdAt, j.updatedAt)"
+          + " from IngestionJob j order by j.createdAt desc, j.id desc")
+  List<IngestionJobListItem> findFirstPage(Limit limit);
 
-  public IngestionJobQueryRepository(JdbcTemplate jdbc) {
-    this.jdbc = jdbc;
-  }
+  @Query(
+      "select new com.desafio.ingestion.ingestion.IngestionJobListItem("
+          + "j.id, j.originalFilename, j.fileSizeBytes, j.status, j.createdAt, j.updatedAt)"
+          + " from IngestionJob j"
+          + " where j.createdAt < :createdAt"
+          + " or (j.createdAt = :createdAt and j.id < :jobId)"
+          + " order by j.createdAt desc, j.id desc")
+  List<IngestionJobListItem> findPageAfter(
+      @Param("createdAt") Instant createdAt, @Param("jobId") UUID jobId, Limit limit);
 
-  public List<IngestionJobListItem> findPage(int limit, IngestionCursorCodec.Cursor cursor) {
-    String base =
-        "SELECT id, original_filename, file_size_bytes, status, created_at, updated_at "
-            + "FROM ingestion_job ";
-    List<Object> args = new ArrayList<>();
-    String sql;
-    if (cursor == null) {
-      sql = base + "ORDER BY created_at DESC, id DESC LIMIT ?";
-    } else {
-      sql =
-          base
-              + "WHERE created_at < ? OR (created_at = ? AND id < ?) "
-              + "ORDER BY created_at DESC, id DESC LIMIT ?";
-      args.add(java.sql.Timestamp.from(cursor.createdAt()));
-      args.add(java.sql.Timestamp.from(cursor.createdAt()));
-      args.add(cursor.jobId());
-    }
-    args.add(limit + 1);
-    return jdbc.query(
-        sql,
-        args.toArray(),
-        (rs, rowNum) ->
-            new IngestionJobListItem(
-                rs.getObject("id", java.util.UUID.class),
-                rs.getString("original_filename"),
-                rs.getLong("file_size_bytes"),
-                JobStatus.valueOf(rs.getString("status")),
-                rs.getTimestamp("created_at").toInstant(),
-                rs.getTimestamp("updated_at").toInstant()));
+  default List<IngestionJobListItem> findPage(int limit, IngestionCursorCodec.Cursor cursor) {
+      Limit pageLimit = Limit.of(limit + 1);
+    
+    return cursor == null
+        ? findFirstPage(pageLimit)
+        : findPageAfter(cursor.createdAt(), cursor.jobId(), pageLimit);
   }
 }
