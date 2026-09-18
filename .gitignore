@@ -1,0 +1,8 @@
+.env
+data/*.csv
+back-end/target/
+front-end/node_modules/
+front-end/dist/
+/csv_tests/200mb.csv
+/csv_tests/customers-2000000.csv
+/scripts/**/data/transactions-1m.csv
