@@ -1,5 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CssBaseline, ThemeProvider } from "@mui/material";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { ptBR } from "date-fns/locale/pt-BR";
 import type { PropsWithChildren } from "react";
 import { theme } from "./theme";
 import { ToastProvider } from "../context/ToastContext";
@@ -13,7 +16,9 @@ export function AppProviders({ children }: PropsWithChildren) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <ToastProvider>{children}</ToastProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
+          <ToastProvider>{children}</ToastProvider>
+        </LocalizationProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

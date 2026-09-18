@@ -1,9 +1,24 @@
+import {
+  format,
+  isAfter,
+  isValid,
+  parse,
+  startOfMonth,
+} from "date-fns";
+
+export interface DashboardDateFormValues {
+  from: Date | null;
+  to: Date | null;
+}
+
 export interface DashboardDateRange {
   from: string;
   to: string;
 }
 
 const BUSINESS_TIME_ZONE = "America/Sao_Paulo";
+const API_DATE_FORMAT = "yyyy-MM-dd";
+export const MIN_DASHBOARD_YEAR = 1900;
 
 export const currentBusinessDate = (): string => {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -22,9 +37,52 @@ export const currentBusinessDate = (): string => {
 
 export const defaultDashboardDateRange = (): DashboardDateRange => {
   const to = currentBusinessDate();
-  return { from: `${to.slice(0, 7)}-01`, to };
+  const parsedTo = parse(to, API_DATE_FORMAT, new Date());
+
+  return {
+    from: format(startOfMonth(parsedTo), API_DATE_FORMAT),
+    to: format(parsedTo, API_DATE_FORMAT),
+  };
+};
+
+export const businessTodayDate = (): Date => {
+  return parse(currentBusinessDate(), API_DATE_FORMAT, new Date());
+};
+
+export const minDashboardDate = (): Date => {
+  return new Date(MIN_DASHBOARD_YEAR, 0, 1);
+};
+
+export const validateDashboardDate = (value: Date | null): true | string => {
+  if (!value || !isValid(value)) return "Informe uma data válida.";
+  if (value.getFullYear() < MIN_DASHBOARD_YEAR) {
+    return `O ano deve ser igual ou posterior a ${MIN_DASHBOARD_YEAR}.`;
+  }
+  if (isAfter(value, businessTodayDate())) {
+    return "A data não pode ser futura.";
+  }
+
+  return true;
 };
 
 export const isValidDateRange = (from: string, to: string): boolean => {
-  return Boolean(from && to && from <= to);
+  if (!from || !to) return false;
+
+  const parsedFrom = parse(from, API_DATE_FORMAT, new Date());
+  const parsedTo = parse(to, API_DATE_FORMAT, new Date());
+
+  return (
+    isValid(parsedFrom) && isValid(parsedTo) && !isAfter(parsedFrom, parsedTo)
+  );
+};
+
+export const parseDashboardDate = (value: string): Date | null => {
+  if (!value) return null;
+
+  const parsed = parse(value, API_DATE_FORMAT, new Date());
+  return isValid(parsed) ? parsed : null;
+};
+
+export const formatDashboardDate = (value: Date | null): string => {
+  return value && isValid(value) ? format(value, API_DATE_FORMAT) : "";
 };

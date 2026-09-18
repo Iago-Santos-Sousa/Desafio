@@ -42,6 +42,15 @@ export function Navbar() {
             </Button>
             <Button
               component={NavLink}
+              to="/ingestions"
+              end
+              className="nav-link"
+              sx={navStyle}
+            >
+              Jobs processados
+            </Button>
+            <Button
+              component={NavLink}
               to="/ingestions/new"
               className="nav-link"
               sx={navStyle}

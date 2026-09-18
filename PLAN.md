@@ -4,7 +4,7 @@
 
 ## Implementacao — dashboard por jobs e filtros temporais
 
-- Dashboard lista todos os jobs em paginas de 10 usando cursor keyset por `created_at` e `id`; detalhe permanece em `/ingestions/{jobId}`.
+- Rota `/ingestions` lista todos os jobs em paginas de 10 usando cursor keyset por `created_at` e `id`; dashboard concentra metricas e detalhe permanece em `/ingestions/{jobId}`.
 - DTO de detalhe expoe totais, contadores, timestamps e erro; `stored_path` nunca sai da API.
 - Detalhe abre modal de transacoes com filtro de categoria por job, autocomplete incremental de 5 opcoes e paginas de 25 transacoes.
 - Analytics aceita `from`/`to` inclusivos em `YYYY-MM-DD`; fuso fixo `America/Sao_Paulo`; limite superior e proximo dia `00:00` exclusivo.
@@ -27,7 +27,7 @@ Implementação aprovada após revisão do estado real:
 ### Front-end
 
 - Instalar `react-router` em versão estável atual e fixar resolução no `package-lock.json`. Usar `createBrowserRouter` + `RouterProvider`, conforme documentação oficial atual consultada via Context7.
-- Rotas: `/` redireciona para `/dashboard`; `/dashboard` exibe métricas, agregados e transações; `/ingestions/new` recebe CSV; `/ingestions/:jobId` acompanha job; `*` exibe 404.
+- Rotas: `/` redireciona para `/dashboard`; `/dashboard` exibe métricas, agregados e progresso ativo; `/ingestions` lista jobs; `/ingestions/new` recebe CSV; `/ingestions/:jobId` acompanha job; `*` exibe 404.
 - TanStack Query continua dono de estado remoto e polling. React Router cuida de navegação, parâmetros e composição de páginas.
 - Estrutura: `app`, `layouts`, `pages`, `features`, `components`, `integrations/api`, `types` e `utils`. `pages` compõe rotas; `features` guarda comportamento de domínio; `integrations` isola HTTP; `utils` contém apenas funções puras reutilizáveis.
 - Filtro de categoria usa query string. Context API fica reservado a estado global real de UI; não manter provider para filtro local.
@@ -46,6 +46,23 @@ Implementação aprovada após revisão do estado real:
 - Refresh direto em qualquer rota funciona no Nginx existente (`try_files ... /index.html`).
 - Contratos REST e schema PostgreSQL permanecem compatíveis.
 - Verificar TypeScript, lint, build Docker do back-end e smoke de endpoints após refatoração.
+
+## Implementacao — rota de jobs e filtros MUI
+
+- Dashboard deixa de renderizar a tabela `Jobs processados`; mantém apenas painel de ingestões ativas com polling para preservar feedback em tempo real.
+- Nova rota `/ingestions` renderiza listagem de jobs com cursor keyset, dez itens por página e navegação para `/ingestions/:jobId`.
+- Navbar recebe link `Jobs processados` com `NavLink`, classe ativa e `aria-current`; `/dashboard`, `/ingestions` e `/ingestions/new` ficam acessíveis diretamente.
+- Filtros de período usam `@mui/x-date-pickers` com `LocalizationProvider`, `AdapterDateFns` e locale `pt-BR`; `date-fns` converte `Date` para `yyyy-MM-dd` sem serialização UTC.
+- Data padrão continua primeiro dia do mês corrente até data atual em `America/Sao_Paulo`; backend mantém interpretação inclusiva do fim do período.
+- Dependências `@mui/x-date-pickers` `9.14.0` e `date-fns` `4.4.0` ficam resolvidas no `package.json`/`package-lock.json`; API, migrations e contratos backend permanecem inalterados.
+
+## Implementacao — React Hook Form e validacao de datas
+
+- `react-hook-form` controla formulario de periodo do dashboard; `Controller` integra DatePicker MUI e exibe `helperText` de erro abaixo de cada campo.
+- Campos de data foram extraidos para `src/components/DateRangeFields.tsx`; regras validam formato, ano `1900..ano atual`, datas futuras, intervalo e calendario bissexto.
+- Backend valida a mesma politica em `DateRangeResolver`; `LocalDate`/ISO rejeita datas inexistentes, como `2023-02-29`, e aceita `2024-02-29`. Ano `0236` retorna `400 INVALID_DATE_RANGE`.
+- `useCursorPagination` concentra cursor, historico, navegacao e reset para jobs e transacoes; paginacao server-side e keyset permanecem inalteradas.
+- Testes unitarios cobrem ano suportado, bissexto valido, ano antigo, futuro e intervalo invertido.
 
 Construir sistema containerizado capaz de receber CSV com mais de 1 milhão de registros, processar sem crescimento proporcional de RAM, consultar progresso, listar dados eficientemente e exibir dashboard React responsivo.
 

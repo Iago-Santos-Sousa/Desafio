@@ -27,7 +27,7 @@ Estas instruções valem para todo o repositório, incluindo `front-end` e `back
 ## Atualização de arquitetura front-end
 
 - Usar `react-router` estável atual com `createBrowserRouter` e `RouterProvider`.
-- Rotas oficiais: `/dashboard`, `/ingestions/new`, `/ingestions/:jobId`, raiz com redirect e fallback 404.
+- Rotas oficiais: `/dashboard`, `/ingestions`, `/ingestions/new`, `/ingestions/:jobId`, raiz com redirect e fallback 404.
 - Manter estado remoto em TanStack Query. Query string representa filtros compartilháveis; Context API somente para estado global de UI.
 - Responsabilidades: `pages` compõe rotas; `features` concentra domínios; `components` é compartilhado; `integrations/api` encapsula Axios; `utils` contém funções puras tipadas.
 - Tailwind v4 cuida de layout/utilitários; MUI cuida de componentes e tema. Não duplicar estilos.
@@ -101,11 +101,15 @@ Se requisito, plano e código divergirem, preserve comportamento existente quand
 - Manter TypeScript estrito. Não introduzir `any`; prefira DTOs e unions discriminadas.
 - Usar componentes funcionais, hooks e `async/await`.
 - TanStack Query controla estado remoto: upload, status, métricas e páginas. Context API guarda apenas estado global de UI que não pertença ao servidor.
+- React Hook Form controla formulários de consulta e validação de campos; componentes MUI controlados usam `Controller`.
 - Axios fica em cliente HTTP central, com base URL, timeout e tratamento de erro coerente.
 - Consultas paginadas incluem cursor e filtros no `queryKey`; usar `placeholderData` para transição estável.
+- Estado de cursor, histórico, próxima/anterior e reset deve ficar em hooks personalizados reutilizáveis; componentes não duplicam essa lógica.
 - Polling usa `refetchInterval` adaptativo e para em estado terminal ou componente desmontado.
 - Nunca renderizar milhões de registros. Usar paginação server-side; virtualization só se página visível ainda for grande.
-- MUI fornece componentes acessíveis. Tailwind CSS v4 usa plugin oficial `@tailwindcss/vite`; evitar dois sistemas disputando reset, spacing e tema.
+- MUI fornece componentes acessíveis. Filtros de calendário usam MUI X Date Pickers com `LocalizationProvider` e `AdapterDateFns`; `date-fns` formata valores de calendário sem `toISOString()`.
+- Filtros de data aceitam somente calendário entre `1900-01-01` e hoje em `America/Sao_Paulo`; frontend e backend devem rejeitar datas inválidas, futuras e anos não suportados.
+- Tailwind CSS v4 usa plugin oficial `@tailwindcss/vite`; evitar dois sistemas disputando reset, spacing e tema.
 - Centralizar tokens de cores, tipografia, espaçamento e estados no tema. Visual claro e vivo, mantendo contraste WCAG AA.
 - Chart.js recebe apenas dados agregados. Destruir/atualizar instâncias via wrapper React oficial.
 - Composition pattern e componentes reutilizáveis, sem abstrair componente usado uma única vez sem ganho claro.

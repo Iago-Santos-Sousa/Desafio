@@ -43,7 +43,7 @@ export const getIngestion = async (id: string): Promise<IngestionStatus> => {
 
 export const getIngestionJobs = async (
   cursor?: string,
-  size = 5,
+  size = 10,
 ): Promise<IngestionJobPage> => {
   const response = await api.get<IngestionJobPage>("/api/v1/ingestions", {
     params: { cursor, size },

@@ -11,12 +11,19 @@ import { Paper, Stack, Typography } from "@mui/material";
 import { formatCurrency } from "../../utils/format";
 import { ErrorState, LoadingState } from "../../components/StateMessage";
 import { Skeleton } from "@mui/material";
-import { Button, TextField } from "@mui/material";
-import { useState } from "react";
+import { Button } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { DateRangeFields } from "../../components/DateRangeFields";
 import {
   useAggregatesQuery,
   useSummaryQuery,
 } from "../../hooks/api/useDashboardQueries";
+import {
+  formatDashboardDate,
+  isValidDateRange,
+  parseDashboardDate,
+  type DashboardDateFormValues,
+} from "../../utils/dateRange";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -31,8 +38,27 @@ export function AnalyticsPanel({
 }) {
   const summary = useSummaryQuery(from, to);
   const aggregates = useAggregatesQuery(from, to);
-  const [draftFrom, setDraftFrom] = useState(from);
-  const [draftTo, setDraftTo] = useState(to);
+  const {
+    control,
+    getValues,
+    handleSubmit,
+    formState: { isValid },
+  } = useForm<DashboardDateFormValues>({
+    defaultValues: {
+      from: parseDashboardDate(from),
+      to: parseDashboardDate(to),
+    },
+    mode: "onChange",
+  });
+
+  const submitRange = (values: DashboardDateFormValues) => {
+    const nextFrom = formatDashboardDate(values.from);
+    const nextTo = formatDashboardDate(values.to);
+
+    if (isValidDateRange(nextFrom, nextTo)) {
+      onRangeChange(nextFrom, nextTo);
+    }
+  };
 
   const rows = aggregates.data?.slice(-12) ?? [];
 
@@ -75,6 +101,8 @@ export function AnalyticsPanel({
       </Stack>
       <Paper component="section" className="p-5" elevation={0}>
         <Stack
+          component="form"
+          onSubmit={handleSubmit(submitRange)}
           direction={{ xs: "column", sm: "row" }}
           justifyContent="space-between"
           alignItems={{ sm: "center" }}
@@ -85,26 +113,11 @@ export function AnalyticsPanel({
             Resumo mensal
           </Typography>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-            <TextField
-              type="date"
-              size="small"
-              label="Início"
-              value={draftFrom}
-              onChange={(event) => setDraftFrom(event.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              type="date"
-              size="small"
-              label="Fim"
-              value={draftTo}
-              onChange={(event) => setDraftTo(event.target.value)}
-              InputLabelProps={{ shrink: true }}
-            />
+            <DateRangeFields control={control} getValues={getValues} />
             <Button
+              type="submit"
               variant="contained"
-              onClick={() => onRangeChange(draftFrom, draftTo)}
-              disabled={draftFrom > draftTo || !draftFrom || !draftTo}
+              disabled={!isValid}
             >
               Aplicar
             </Button>

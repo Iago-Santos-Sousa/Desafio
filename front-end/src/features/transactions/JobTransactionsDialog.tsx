@@ -22,6 +22,7 @@ import {
 import { useState } from "react";
 import { useJobCategoriesQuery } from "../../hooks/api/useIngestionQueries";
 import { useTransactionsQuery } from "../../hooks/api/useDashboardQueries";
+import { useCursorPagination } from "../../hooks/useCursorPagination";
 import { formatCurrency, formatDateTime } from "../../utils/format";
 
 export function JobTransactionsDialog({
@@ -35,8 +36,13 @@ export function JobTransactionsDialog({
 }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
-  const [cursor, setCursor] = useState<number>();
-  const [history, setHistory] = useState<number[]>([]);
+  const {
+    cursor,
+    hasPrevious,
+    next,
+    previous,
+    reset: resetPagination,
+  } = useCursorPagination<number>();
   const categories = useJobCategoriesQuery(jobId, search, open);
 
   const transactions = useTransactionsQuery(
@@ -52,29 +58,13 @@ export function JobTransactionsDialog({
   const close = () => {
     setSearch("");
     setCategory(null);
-    setCursor(undefined);
-    setHistory([]);
+    resetPagination();
     onClose();
   };
 
   const resetTransactions = (value: string | null) => {
     setCategory(value);
-    setCursor(undefined);
-    setHistory([]);
-  };
-
-  const next = () => {
-    if (transactions.data?.nextCursor) {
-      setHistory((old) => [...old, cursor ?? 0]);
-      setCursor(transactions.data.nextCursor);
-    }
-  };
-
-  const previous = () => {
-    const old = [...history];
-    const value = old.pop();
-    setHistory(old);
-    setCursor(value || undefined);
+    resetPagination();
   };
 
   return (
@@ -192,12 +182,12 @@ export function JobTransactionsDialog({
             </Typography>
           )}
           <Stack direction="row" justifyContent="flex-end" spacing={1}>
-            <Button onClick={previous} disabled={!history.length}>
+            <Button onClick={previous} disabled={!hasPrevious}>
               Anterior
             </Button>
             <Button
               variant="outlined"
-              onClick={next}
+              onClick={() => next(transactions.data?.nextCursor)}
               disabled={!transactions.data?.nextCursor}
             >
               Próxima
