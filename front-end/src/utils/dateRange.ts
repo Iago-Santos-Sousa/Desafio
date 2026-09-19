@@ -56,9 +56,11 @@ export const minDashboardDate = (): Date => {
 
 export const validateDashboardDate = (value: Date | null): true | string => {
   if (!value || !isValid(value)) return "Informe uma data válida.";
+
   if (value.getFullYear() < MIN_DASHBOARD_YEAR) {
     return `O ano deve ser igual ou posterior a ${MIN_DASHBOARD_YEAR}.`;
   }
+
   if (isAfter(value, businessTodayDate())) {
     return "A data não pode ser futura.";
   }
@@ -94,6 +96,7 @@ export const isSupportedDashboardDate = (value: string): boolean => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
 
   const parsed = parse(value, API_DATE_FORMAT, new Date());
+
   if (!isValid(parsed) || format(parsed, API_DATE_FORMAT) !== value) {
     return false;
   }
