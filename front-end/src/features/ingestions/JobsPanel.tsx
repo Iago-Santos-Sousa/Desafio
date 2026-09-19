@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   LinearProgress,
   Skeleton,
@@ -8,6 +9,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Database, Eye } from "lucide-react";
@@ -86,15 +88,28 @@ export function JobsPanel({
                       </TableCell>
                       <TableCell>{formatDateTime(job.createdAt)}</TableCell>
                       <TableCell align="right">
-                        <Button
-                          component={Link}
-                          to={`/ingestions/${job.jobId}`}
-                          size="small"
-                          variant="outlined"
-                          startIcon={<Eye size={17} aria-hidden="true" />}
-                        >
-                          Ver detalhes
-                        </Button>
+                        <Tooltip title="Ver detalhes" arrow>
+                          <Button
+                            component={Link}
+                            to={`/ingestions/${job.jobId}`}
+                            size="small"
+                            variant="outlined"
+                            aria-label="Ver detalhes"
+                            startIcon={<Eye size={17} aria-hidden="true" />}
+                            sx={{
+                              "@media (max-width: 849px)": {
+                                minWidth: 44,
+                                width: 44,
+                                px: 0.5,
+                                "& .MuiButton-startIcon": { m: 0 },
+                              },
+                            }}
+                          >
+                            <Box component="span" sx={{ "@media (max-width: 849px)": { display: "none" } }}>
+                              Ver detalhes
+                            </Box>
+                          </Button>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   );

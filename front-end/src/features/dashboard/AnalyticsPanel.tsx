@@ -118,9 +118,29 @@ export function AnalyticsPanel({
           spacing={2}
           mb={2}
         >
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{
+              "@media (max-width: 679px)": {
+                flexDirection: "column",
+                alignItems: "stretch",
+              },
+            }}
+          >
             <DateRangeFields control={control} getValues={getValues} />
-            <Button type="submit" variant="contained" disabled={!isValid}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={!isValid}
+              sx={{
+                "@media (max-width: 679px)": {
+                  alignSelf: "stretch",
+                  marginTop: 2,
+                },
+              }}
+            >
               Aplicar
             </Button>
           </Stack>

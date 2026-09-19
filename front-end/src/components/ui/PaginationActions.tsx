@@ -15,7 +15,7 @@ export function PaginationActions({
   onNext,
 }: PaginationActionsProps) {
   return (
-    <Stack direction="row" gap={1} justifyContent="flex-end">
+    <Stack direction="row" gap={1} justifyContent="flex-end" marginTop={2}>
       <Button
         variant="outlined"
         size="small"
