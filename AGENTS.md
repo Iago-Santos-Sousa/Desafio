@@ -96,7 +96,7 @@ Se requisito, plano e código divergirem, preserve comportamento existente quand
 - Índices devem corresponder aos filtros e ordenação reais. Evitar excesso de índices na tabela de ingestão.
 - Testes principais: unidade para parser/validação/mapeamento; integração com PostgreSQL/RabbitMQ reais via Testcontainers; API para contratos e paginação.
 
-## Front-end — React, Vite e TypeScript
+## Front-end — React, Vite, TypeScript, Tan Stack Query, Axios, React Hook Form, date-fns
 
 - Manter TypeScript estrito. Não introduzir `any`; prefira DTOs e unions discriminadas.
 - Usar componentes funcionais, hooks e `async/await`.
@@ -117,6 +117,21 @@ Se requisito, plano e código divergirem, preserve comportamento existente quand
 - Composition pattern e componentes reutilizáveis, sem abstrair componente usado uma única vez sem ganho claro.
 - Estados obrigatórios: inicial, upload em andamento, fila/processamento, sucesso, vazio, erro recuperável e erro terminal.
 - Acessibilidade: labels, foco visível, navegação por teclado, `aria-live` para progresso e mensagens úteis.
+
+## Frontend rules
+
+- Design system front-end está documentado em `front-end/DESIGN_SYSTEM.md`; MUI é fonte de verdade para tokens/componentes e Lucide React para ícones nomeados.
+- CSS layers `theme, base, mui, components, utilities` e `StyledEngineProvider enableCssLayer` devem ser preservados ao combinar MUI com Tailwind v4.
+
+- Use TypeScript strict typing.
+- Prefer functional components.
+- Avoid `any`.
+- Reuse existing UI components before creating new ones.
+- Do not duplicate design tokens.
+- Do not hardcode colors when a semantic token exists.
+- Keep pages thin and extract reusable components.
+- Preserve accessibility and keyboard navigation.
+- All new UI must follow the project's Design System.
 
 ## Banco e contratos planejados
 

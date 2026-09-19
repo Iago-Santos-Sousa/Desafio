@@ -4,9 +4,9 @@ import { Navbar } from "../components/Navbar";
 
 export function AppLayout() {
   return (
-    <Box className="min-h-screen bg-slate-50">
+    <Box className="min-h-screen bg-app-background">
       <Navbar />
-      <Container maxWidth="xl" className="py-8">
+      <Container maxWidth="xl" className="py-8 md:py-10">
         <Outlet />
       </Container>
     </Box>

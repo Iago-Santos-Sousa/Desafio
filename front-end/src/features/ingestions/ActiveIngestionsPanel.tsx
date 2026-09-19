@@ -1,11 +1,8 @@
-import {
-  LinearProgress,
-  Paper,
-  Skeleton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { LinearProgress, Skeleton, Stack, Typography } from "@mui/material";
+import { Activity } from "lucide-react";
 import type { IngestionStatus } from "../../types/api";
+import { SectionCard } from "../../components/ui/SectionCard";
+import { StatusBadge } from "../../components/ui/StatusBadge";
 
 export function ActiveIngestionsPanel({
   jobs,
@@ -17,10 +14,10 @@ export function ActiveIngestionsPanel({
   if (!loading && jobs.length === 0) return null;
 
   return (
-    <Paper component="section" className="p-5" elevation={0}>
-      <Typography variant="h5" fontWeight={700} mb={2}>
-        Processamento em tempo real
-      </Typography>
+    <SectionCard
+      title="Processamento em tempo real"
+      icon={<Activity size={22} aria-hidden="true" />}
+    >
       {loading ? (
         <Stack spacing={1}>
           <Skeleton variant="text" width="60%" />
@@ -29,10 +26,18 @@ export function ActiveIngestionsPanel({
       ) : (
         <Stack spacing={2}>
           {jobs.map((job) => (
-            <Stack key={job.jobId} spacing={0.5}>
-              <Typography variant="body2">
-                {job.originalFilename} · {job.status}
-              </Typography>
+            <Stack key={job.jobId} spacing={0.75}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                gap={2}
+              >
+                <Typography variant="body2" noWrap>
+                  {job.originalFilename}
+                </Typography>
+                <StatusBadge status={job.status} />
+              </Stack>
               <LinearProgress variant="indeterminate" />
               <Typography
                 variant="caption"
@@ -47,6 +52,6 @@ export function ActiveIngestionsPanel({
           ))}
         </Stack>
       )}
-    </Paper>
+    </SectionCard>
   );
 }

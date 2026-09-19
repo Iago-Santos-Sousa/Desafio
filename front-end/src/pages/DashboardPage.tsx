@@ -1,4 +1,5 @@
 import { Stack } from "@mui/material";
+import { Gauge } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { PageHeader } from "../components/PageHeader";
@@ -14,13 +15,13 @@ export function DashboardPage() {
   const urlFrom = params.get("from");
   const urlTo = params.get("to");
 
-  const urlFilters = useMemo(() => {
-    if (urlFrom && urlTo && isValidDateRange(urlFrom, urlTo)) {
-      return { from: urlFrom, to: urlTo };
-    }
-
-    return null;
-  }, [urlFrom, urlTo]);
+  const urlFilters = useMemo(
+    () =>
+      urlFrom && urlTo && isValidDateRange(urlFrom, urlTo)
+        ? { from: urlFrom, to: urlTo }
+        : null,
+    [urlFrom, urlTo],
+  );
 
   const effectiveFilters = urlFilters ?? filters;
   const activeIngestions = useActiveIngestionsQuery();
@@ -29,10 +30,8 @@ export function DashboardPage() {
     if (
       filters.from !== effectiveFilters.from ||
       filters.to !== effectiveFilters.to
-    ) {
+    )
       setFilters(effectiveFilters);
-    }
-
     if (urlFrom !== effectiveFilters.from || urlTo !== effectiveFilters.to) {
       const nextParams = new URLSearchParams(params);
       nextParams.set("from", effectiveFilters.from);
@@ -61,6 +60,13 @@ export function DashboardPage() {
       <PageHeader
         title="DataPulse"
         description="Ingestão financeira em larga escala, sem travar sua tela."
+        icon={
+          <Gauge
+            size={28}
+            color="var(--mui-palette-primary-main)"
+            aria-hidden="true"
+          />
+        }
       />
       <ActiveIngestionsPanel
         jobs={activeIngestions.data ?? []}

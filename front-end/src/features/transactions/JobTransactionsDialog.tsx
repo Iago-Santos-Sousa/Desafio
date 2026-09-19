@@ -8,7 +8,6 @@ import {
   DialogTitle,
   IconButton,
   LinearProgress,
-  Paper,
   Skeleton,
   Stack,
   Table,
@@ -19,6 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useState } from "react";
 import { useJobCategoriesQuery } from "../../hooks/api/useIngestionQueries";
 import { useTransactionsQuery } from "../../hooks/api/useDashboardQueries";
@@ -36,6 +36,7 @@ export function JobTransactionsDialog({
 }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+
   const {
     cursor,
     hasPrevious,
@@ -43,6 +44,7 @@ export function JobTransactionsDialog({
     previous,
     reset: resetPagination,
   } = useCursorPagination<number>();
+
   const categories = useJobCategoriesQuery(jobId, search, open);
 
   const transactions = useTransactionsQuery(
@@ -82,7 +84,7 @@ export function JobTransactionsDialog({
           onClick={close}
           sx={{ position: "absolute", right: 8, top: 8 }}
         >
-          ×
+          <X size={20} aria-hidden="true" />
         </IconButton>
       </DialogTitle>
       <DialogContent>
@@ -128,15 +130,22 @@ export function JobTransactionsDialog({
               />
             )}
           />
-          {transactions.isFetching && !transactions.isPending && (
+          {transactions.isFetching && !transactions.isPending ? (
             <LinearProgress />
-          )}
-          {transactions.isError && (
+          ) : null}
+          {transactions.isError ? (
             <Typography color="error">
               Não foi possível carregar transações.
             </Typography>
-          )}
-          <Paper variant="outlined">
+          ) : null}
+          <Box
+            sx={{
+              border: 1,
+              borderColor: "divider",
+              borderRadius: 2,
+              overflow: "hidden",
+            }}
+          >
             <Box sx={{ overflowX: "auto" }}>
               <Table size="small">
                 <TableHead>
@@ -175,20 +184,25 @@ export function JobTransactionsDialog({
                 </TableBody>
               </Table>
             </Box>
-          </Paper>
-          {!transactions.isLoading && !transactions.data?.items.length && (
+          </Box>
+          {!transactions.isLoading && !transactions.data?.items.length ? (
             <Typography color="text.secondary">
               Nenhuma transação encontrada.
             </Typography>
-          )}
+          ) : null}
           <Stack direction="row" justifyContent="flex-end" spacing={1}>
-            <Button onClick={previous} disabled={!hasPrevious}>
+            <Button
+              onClick={previous}
+              disabled={!hasPrevious}
+              startIcon={<ChevronLeft size={18} />}
+            >
               Anterior
             </Button>
             <Button
               variant="outlined"
               onClick={() => next(transactions.data?.nextCursor)}
               disabled={!transactions.data?.nextCursor}
+              endIcon={<ChevronRight size={18} />}
             >
               Próxima
             </Button>

@@ -3,14 +3,15 @@ import {
   Alert,
   Button,
   LinearProgress,
-  Paper,
   Stack,
   Typography,
 } from "@mui/material";
+import { FileUp, UploadCloud } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useUploadCsvMutation } from "../../hooks/api/useIngestionQueries";
 import { useToast } from "../../context/useToast";
 import { ApiClientError } from "../../integrations/api/client";
+import { SectionCard } from "../../components/ui/SectionCard";
 
 export function UploadPanel() {
   const navigate = useNavigate();
@@ -21,7 +22,6 @@ export function UploadPanel() {
 
   const onFile = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = event.target.files?.[0];
-
     if (selected) {
       setFile(selected);
       upload.reset();
@@ -30,17 +30,24 @@ export function UploadPanel() {
   };
 
   return (
-    <Paper component="section" className="p-6" elevation={0}>
+    <SectionCard
+      title="Enviar arquivo CSV"
+      icon={<UploadCloud size={22} aria-hidden="true" />}
+    >
       <Stack spacing={2}>
-        <Typography variant="h5" fontWeight={700}>
-          Enviar arquivo CSV
+        <Typography color="text.secondary">
+          Selecione um arquivo no formato CSV canônico para iniciar ingestão.
         </Typography>
         <Stack
           direction={{ xs: "column", md: "row" }}
           spacing={2}
           alignItems={{ md: "center" }}
         >
-          <Button component="label" variant="outlined">
+          <Button
+            component="label"
+            variant="outlined"
+            startIcon={<FileUp size={18} aria-hidden="true" />}
+          >
             {file?.name ?? "Selecionar CSV"}
             <input
               hidden
@@ -76,19 +83,19 @@ export function UploadPanel() {
           >
             {upload.isPending ? "Enviando…" : "Iniciar ingestão"}
           </Button>
-          {upload.isError && (
+          {upload.isError ? (
             <Alert severity="error">
               Falha no upload. Verifique CSV e API.
             </Alert>
-          )}
+          ) : null}
         </Stack>
-        {upload.isPending && (
+        {upload.isPending ? (
           <Stack spacing={1}>
             <Typography variant="body2">Upload: {progress}%</Typography>
             <LinearProgress variant="determinate" value={progress} />
           </Stack>
-        )}
+        ) : null}
       </Stack>
-    </Paper>
+    </SectionCard>
   );
 }

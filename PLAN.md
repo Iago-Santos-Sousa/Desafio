@@ -76,6 +76,16 @@ Implementação aprovada após revisão do estado real:
 
 Construir sistema containerizado capaz de receber CSV com mais de 1 milhão de registros, processar sem crescimento proporcional de RAM, consultar progresso, listar dados eficientemente e exibir dashboard React responsivo.
 
+## Implementação — Design System DataPulse
+
+- Tema claro MUI centraliza tokens de azul/verde, estados, tipografia, superfícies, bordas e paleta categórica de gráficos em `front-end/src/app/designTokens.ts` e `src/app/theme.ts`.
+- Integração MUI + Tailwind v4 usa CSS layers oficiais (`theme`, `base`, `mui`, `components`, `utilities`) e mantém Tailwind restrito a layout/responsividade.
+- Componentes reutilizáveis (`SectionCard`, `MetricCard`, `StatusBadge`, `StatePanel`, `PaginationActions`, `DataTableShell`) padronizam cards, métricas, estados, tabelas e paginação.
+- Navbar responsiva usa `NavLink`, estado ativo, Drawer móvel e ícones Lucide com labels acessíveis. Todas as rotas preservam contratos, polling, paginação, filtros e toasts existentes.
+- `front-end/DESIGN_SYSTEM.md`, `front-end/AGENTS.md` e skill `.agents/skills/datapulse-design-system/SKILL.md` registram regras de implementação, acessibilidade, responsividade e validação.
+- Dependência nova: `lucide-react`; nenhuma alteração de API ou back-end.
+- Validação planejada: lint, build Vite/TypeScript, build Docker do front-end, validação da skill e revisão de diff.
+
 Estado inicial em 2026-09-16:
 
 - `front-end`: scaffold React 19 + Vite 8 + TypeScript 6, ainda com tela inicial.

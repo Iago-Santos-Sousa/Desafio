@@ -7,13 +7,16 @@ import {
   LinearScale,
   Tooltip,
 } from "chart.js";
-import { Paper, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
+import { BarChart3, Rows3, Tags, WalletCards } from "lucide-react";
 import { formatCurrency } from "../../utils/format";
 import { ErrorState, LoadingState } from "../../components/StateMessage";
-import { Skeleton } from "@mui/material";
 import { Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { DateRangeFields } from "../../components/DateRangeFields";
+import { MetricCard } from "../../components/ui/MetricCard";
+import { SectionCard } from "../../components/ui/SectionCard";
+import { designTokens } from "../../app/designTokens";
 import {
   useAggregatesQuery,
   useSummaryQuery,
@@ -38,6 +41,7 @@ export function AnalyticsPanel({
 }) {
   const summary = useSummaryQuery(from, to);
   const aggregates = useAggregatesQuery(from, to);
+
   const {
     control,
     getValues,
@@ -68,7 +72,7 @@ export function AnalyticsPanel({
       {
         label: "Valor total",
         data: rows.map((row) => row.totalAmount),
-        backgroundColor: "#4f46e5",
+        backgroundColor: designTokens.chart[0],
         borderRadius: 8,
       },
     ],
@@ -80,26 +84,31 @@ export function AnalyticsPanel({
         <ErrorState message="NÃ£o foi possÃ­vel carregar resumo." />
       )}
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-        {[
-          ["Registros", summary.data?.transactionCount ?? 0],
-          ["Valor total", formatCurrency(summary.data?.totalAmount ?? 0)],
-          ["Categorias", summary.data?.categoryCount ?? 0],
-        ].map(([label, value]) => (
-          <Paper key={String(label)} className="p-5 flex-1" elevation={0}>
-            <Typography color="text.secondary">{label}</Typography>
-            {summary.isPending ? (
-              <Skeleton variant="text" height={48} />
-            ) : (
-              <Typography variant="h4" fontWeight={800}>
-                {typeof value === "number"
-                  ? value.toLocaleString("pt-BR")
-                  : value}
-              </Typography>
-            )}
-          </Paper>
-        ))}
+        <MetricCard
+          label="Registros"
+          value={(summary.data?.transactionCount ?? 0).toLocaleString("pt-BR")}
+          icon={<Rows3 size={22} />}
+          loading={summary.isPending}
+        />
+        <MetricCard
+          label="Valor total"
+          value={formatCurrency(summary.data?.totalAmount ?? 0)}
+          icon={<WalletCards size={22} />}
+          tone="success"
+          loading={summary.isPending}
+        />
+        <MetricCard
+          label="Categorias"
+          value={(summary.data?.categoryCount ?? 0).toLocaleString("pt-BR")}
+          icon={<Tags size={22} />}
+          tone="info"
+          loading={summary.isPending}
+        />
       </Stack>
-      <Paper component="section" className="p-5" elevation={0}>
+      <SectionCard
+        title="Resumo mensal"
+        icon={<BarChart3 size={22} aria-hidden="true" />}
+      >
         <Stack
           component="form"
           onSubmit={handleSubmit(submitRange)}
@@ -109,16 +118,9 @@ export function AnalyticsPanel({
           spacing={2}
           mb={2}
         >
-          <Typography variant="h5" fontWeight={700}>
-            Resumo mensal
-          </Typography>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
             <DateRangeFields control={control} getValues={getValues} />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!isValid}
-            >
+            <Button type="submit" variant="contained" disabled={!isValid}>
               Aplicar
             </Button>
           </Stack>
@@ -143,7 +145,7 @@ export function AnalyticsPanel({
             Nenhum agregado disponível.
           </Typography>
         )}
-      </Paper>
+      </SectionCard>
     </>
   );
 }

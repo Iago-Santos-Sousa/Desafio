@@ -76,6 +76,10 @@ Mude decisão arquitetural somente com evidência concreta e atualização simul
 - Controllers Java não acessam `JdbcTemplate`; SQL fica em repositories e DTOs ficam fora de controllers.
 - Criar `utils` somente para função pura compartilhada; não usar pacote como depósito genérico.
 
+## Design system front-end
+
+- UI/UX segue `front-end/DESIGN_SYSTEM.md` e `front-end/AGENTS.md`; MUI controla componentes/tokens, Tailwind v4 layout e Lucide ícones acessíveis.
+
 ## Entrega
 
 Resuma solução, arquivos alterados, validações executadas e pendências. Não declare teste, performance ou compatibilidade que não tenha sido verificada.

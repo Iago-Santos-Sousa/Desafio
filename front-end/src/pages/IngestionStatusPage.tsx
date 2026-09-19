@@ -1,4 +1,5 @@
 import { Button, Stack } from "@mui/material";
+import { Activity, ArrowLeft } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router";
@@ -42,20 +43,36 @@ export function IngestionStatusPage() {
           durationMs: status.data.status === "FAILED" ? 8000 : 5000,
         });
     }
+
     previousStatus.current = status.data?.status;
   }, [queryClient, showToast, status.data]);
 
   return (
     <Stack spacing={3}>
-      <PageHeader title="Acompanhamento" description={`Job ${jobId ?? ""}`} />
-      {status.isLoading && <LoadingState />}
-      {status.isError && (
+      <PageHeader
+        title="Acompanhamento"
+        description={`Job ${jobId ?? ""}`}
+        icon={
+          <Activity
+            size={28}
+            color="var(--mui-palette-primary-main)"
+            aria-hidden="true"
+          />
+        }
+      />
+      {status.isLoading ? <LoadingState /> : null}
+      {status.isError ? (
         <ErrorState message="Não foi possível consultar ingestão." />
-      )}
-      {status.data && (
+      ) : null}
+      {status.data ? (
         <JobStatusPanel status={status.data} fetching={status.isFetching} />
-      )}
-      <Button component={Link} to="/dashboard" variant="outlined">
+      ) : null}
+      <Button
+        component={Link}
+        to="/dashboard"
+        variant="outlined"
+        startIcon={<ArrowLeft size={18} aria-hidden="true" />}
+      >
         Voltar ao dashboard
       </Button>
     </Stack>
